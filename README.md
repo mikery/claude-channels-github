@@ -50,7 +50,7 @@ claude plugin install gh-channels
 ### Run
 
 ```bash
-claude --dangerously-load-development-channels server:gh-channels
+claude --dangerously-load-development-channels plugin:gh-channels@gh-channels
 ```
 
 ### Watch issues and PRs

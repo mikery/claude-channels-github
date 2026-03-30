@@ -12,12 +12,17 @@ when CI passes.
 ## Setup
 
 The repo owner, name, and default branch are available from the gh-channel
-server instructions (injected at connection time). If labels or preferences
-were not provided in the user's request, use AskUserQuestion to gather them:
+server instructions (injected at connection time).
 
-- **Labels** (required): which labels to filter on
-- **Auto-merge** (default: no): whether to merge PRs automatically when ready
-- **Existing issues** (default: new only): whether to also work on issues that already exist with matching labels, or only watch for new ones
+Before starting, collect configuration using a single AskUserQuestion call
+with all three questions. Do not ask as plain text — use the AskUserQuestion
+tool so the user gets a structured prompt with selectable options.
+
+Questions to ask (use multiSelect for labels, single-select for the others):
+
+1. **Labels** — which issue labels should trigger automation (multiSelect)
+2. **Auto-merge** — merge PRs automatically when ready, or ask each time
+3. **Existing issues** — work on existing matching issues, or only new ones
 
 Once confirmed:
 1. Call `watch_issues` with the label filter
