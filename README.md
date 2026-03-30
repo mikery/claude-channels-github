@@ -17,9 +17,11 @@ MCP channel server + Claude Code plugin that pushes GitHub events (PRs, CI, issu
 Download the latest release (macOS arm64):
 
 ```bash
-curl -fsSL https://github.com/mikery/claude-channels-github/releases/latest/download/claude-channels-github-darwin-arm64 -o /usr/local/bin/claude-channels-github
-chmod +x /usr/local/bin/claude-channels-github
-curl -fsSL https://github.com/mikery/claude-channels-github/releases/latest/download/claude-channels-github-darwin-arm64.sha256 | shasum -a 256 -c
+curl -fsSL https://github.com/mikery/claude-channels-github/releases/latest/download/claude-channels-github-darwin-arm64 -O
+curl -fsSL https://github.com/mikery/claude-channels-github/releases/latest/download/claude-channels-github-darwin-arm64.sha256 -O
+shasum -a 256 -c claude-channels-github-darwin-arm64.sha256
+install -m 755 claude-channels-github-darwin-arm64 /usr/local/bin/claude-channels-github
+rm claude-channels-github-darwin-arm64 claude-channels-github-darwin-arm64.sha256
 ```
 
 Or build from source:
