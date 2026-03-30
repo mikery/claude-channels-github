@@ -43,7 +43,7 @@ install claude-channels-github /usr/local/bin/
 ### Install the plugin
 
 ```bash
-claude plugin marketplace add github:mikery/claude-channels-github
+claude plugin marketplace add mikery/claude-channels-github
 claude plugin install gh-channels
 ```
 
