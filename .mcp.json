@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "gh-channels": {
+      "command": "claude-channels-github",
+      "args": ["server"],
+      "env": { "GH_CHANNEL_USE_GH_AUTH": "1" }
+    }
+  }
+}

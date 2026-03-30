@@ -1,0 +1,21 @@
+{
+  "name": "gh-channels",
+  "owner": {
+    "name": "mikery"
+  },
+  "plugins": [
+    {
+      "name": "gh-channels",
+      "description": "GitHub PR, CI, and issue watching with orchestration skills for Claude Code",
+      "source": "./",
+      "version": "0.1.0",
+      "author": { "name": "mikery" },
+      "skills": [
+        "./skills/pr-handler",
+        "./skills/issue-handler"
+      ],
+      "category": "development",
+      "keywords": ["github", "pr", "ci", "issues", "orchestration", "channels"]
+    }
+  ]
+}

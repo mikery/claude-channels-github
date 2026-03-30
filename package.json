@@ -1,0 +1,18 @@
+{
+  "name": "claude-channels-github",
+  "version": "0.0.1",
+  "module": "gh-channel.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.28.0",
+    "@octokit/rest": "^22.0.1",
+    "pino": "^10.3.1"
+  }
+}
