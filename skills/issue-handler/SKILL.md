@@ -15,14 +15,18 @@ The repo owner, name, and default branch are available from the gh-channel
 server instructions (injected at connection time).
 
 Before starting, collect configuration using a single AskUserQuestion call
-with all three questions. Do not ask as plain text — use the AskUserQuestion
+with all three questions. For these setup questions, use the AskUserQuestion
 tool so the user gets a structured prompt with selectable options.
 
 Questions to ask (use multiSelect for labels, single-select for the others):
 
-1. **Labels** — which issue labels should trigger automation (multiSelect)
+1. **Labels (required)** — which issue labels should trigger automation (multiSelect)
 2. **Auto-merge** — merge PRs automatically when ready, or ask each time
 3. **Existing issues** — work on existing matching issues, or only new ones
+
+If the user selects no labels, explain that at least one is required to avoid
+automating every issue in the repo, and reprompt. Do not start `watch_issues`
+until the user has selected at least one label.
 
 Once confirmed:
 1. Call `watch_issues` with the label filter

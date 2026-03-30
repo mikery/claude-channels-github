@@ -54,7 +54,7 @@ Six tools exposed over MCP stdio. All poll-based tools accept an optional
 ## How to run
 
 ```bash
-claude --dangerously-load-development-channels server:claude-gh-channel
+claude --dangerously-load-development-channels plugin:gh-channels@gh-channels
 ```
 
 With `.mcp.json`:
