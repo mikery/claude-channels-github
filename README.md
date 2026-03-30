@@ -1,6 +1,12 @@
 # claude-channels-github
 
-MCP channel server + Claude Code plugin that pushes GitHub events (PRs, CI, issues) into your Claude session in real time.
+You assign an issue. Claude creates a worktree, writes the fix, opens a PR, watches CI, fixes failures, and merges — all without you touching it.
+
+<p align="center">
+  <img src="docs/sequence.png" alt="GitHub to Claude lifecycle: issue created, open PR, run checks, fix failures, merge" width="700">
+</p>
+
+An MCP channel server + Claude Code plugin that pushes GitHub events (PRs, CI, issues) into your Claude session in real time.
 
 > **Channels are a Claude Code research preview.** The `--dangerously-load-development-channels` flag is required. Expect rough edges.
 
@@ -36,14 +42,10 @@ install claude-channels-github /usr/local/bin/
 
 ### Install the plugin
 
-Add the marketplace and install:
-
 ```bash
 claude plugin marketplace add github:mikery/claude-channels-github
 claude plugin install gh-channels
 ```
-
-The plugin bundles the MCP server config, slash commands, and orchestration skills. No separate MCP configuration needed.
 
 ### Run
 
@@ -51,27 +53,29 @@ The plugin bundles the MCP server config, slash commands, and orchestration skil
 claude --dangerously-load-development-channels server:gh-channels
 ```
 
-The `server:gh-channels` flag loads the channel listener, which is required for real-time event push. The plugin provides the MCP tools and commands.
+### Watch issues and PRs
 
-### First watch
+Watch for new issues with a label and act on them:
+
+```
+> /issue-handler
+```
+
+Claude will ask which labels to filter on and whether to auto-merge. New issues get picked up, fixed in worktrees, and submitted as PRs.
+
+Watch a specific PR through to merge:
 
 ```
 > /watch-pr 42
 ```
 
-Claude will poll the PR every 30 seconds and report reviews, CI changes, comments, and merge readiness.
+Claude polls every 30 seconds and reports reviews, CI changes, comments, and merge readiness.
 
-## What it does
+## How it works
 
-You assign an issue. Claude creates a worktree, writes the fix, opens a PR, watches CI, fixes failures, and merges — all without you touching it.
+A poll-based MCP server watches GitHub for events (reviews, CI state changes, new issues, merge conflicts) and pushes them into Claude's session as channel notifications. A plugin layer adds slash commands and skills that turn those notifications into autonomous workflows.
 
-<p align="center">
-  <img src="docs/sequence.png" alt="GitHub to Claude lifecycle: issue created, open PR, run checks, fix failures, merge" width="700">
-</p>
-
-Under the hood, a poll-based MCP server watches GitHub for events (reviews, CI state changes, new issues, merge conflicts) and pushes them into Claude's session as channel notifications. A plugin layer adds slash commands and orchestration skills that turn those notifications into autonomous workflows.
-
-**Channel server**
+**Tools**
 
 | Tool | Watches for | Auto-stops |
 |------|------------|------------|
@@ -84,25 +88,14 @@ Under the hood, a poll-based MCP server watches GitHub for events (reviews, CI s
 
 All poll-based tools accept an optional `poll_interval` (seconds, default: 30).
 
-**Plugin**
+**Skills**
 
-| Commands | |
-|----------|--|
-| `/watch-pr <number>` | Watch a single PR |
-| `/watch-ci <ref>` | Watch CI on a branch or SHA |
-| `/watch-issues [--labels a,b]` | Watch for new issues |
-| `/watch-prs [--labels a,b]` | Watch for new PRs |
-| `/watches` | List active watches |
-| `/stop-watch <key>` | Stop a watch |
-
-| Skills | |
+| Skill | |
 |--------|--|
 | `pr-handler` | Handle a single PR to merge: respond to reviews, fix CI, resolve conflicts, merge when ready |
 | `issue-handler` | Watch for new issues, create worktrees, open PRs, dispatch `pr-handler` for each, merge on green |
 
 ## Authentication
-
-Two options:
 
 | Method | Setup |
 |--------|-------|
@@ -120,7 +113,7 @@ Two options:
 
 ## Architecture
 
-**Single file** (`gh-channel.ts`), compiled to a standalone binary with Bun.
+Single file (`gh-channel.ts`), compiled to a standalone binary with Bun.
 
 **WatchRunner** is the core abstraction — a generic polling engine that manages watch lifecycle:
 
@@ -129,15 +122,7 @@ Two options:
 - **Error handling**: 5 consecutive failures → auto-stop with notification
 - **Rate limits**: Tracks `x-ratelimit-remaining` via Octokit hook. Pauses all polls at 20 remaining, warns at 100, resumes after reset timestamp
 
-Each watch type (PR, CI, issues, PRs) provides a `createState()` + `poll(state, initial)` function. The runner handles scheduling, error counting, and notification delivery.
-
-**Key design choices:**
-
-- **Terminal CI states only** — no queued/in_progress noise. Notifies when checks conclude.
-- **One notification per review** — reviews are a logical unit. Inline comments bundled with diff hunks.
-- **Merge conflict on transition** — notifies when conflict appears *and* when it resolves.
-- **Ready-to-merge uses GitHub's `mergeable_state`** — relies on GitHub's own branch protection evaluation rather than custom logic. Requires two consecutive `clean` readings to avoid transient states.
-- **Initial poll sends snapshot** — first poll seeds state and sends a status summary so Claude has full context.
+Each watch type provides a `createState()` + `poll(state, initial)` function. The runner handles scheduling, error counting, and notification delivery.
 
 ## License
 
