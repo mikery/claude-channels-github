@@ -45,7 +45,7 @@ git add .github && git commit -m "add CI" && git push
 Start Claude with the channel in a separate terminal:
 
 ```bash
-claude --dangerously-load-development-channels server:claude-gh-channel
+claude --dangerously-load-development-channels plugin:gh-channels@gh-channels
 ```
 
 The `USE_GH_AUTH=1` env var should be set in your `.mcp.json` config,
